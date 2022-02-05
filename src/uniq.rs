@@ -19,18 +19,11 @@ pub fn start_thread_uniq(
         for l in buffer {
             let ll = if not_case_sensitive {
                 l.to_lowercase()
-            }else{
+            } else {
                 l
             };
-            let exist = uniq.get(&ll);
-            match &exist {
-                None => {
-                    uniq.insert(ll, 1);
-                }
-                Some(x) => {
-                    uniq.insert(ll, *x + 1);
-                }
-            }
+            let v = uniq.entry(ll.clone()).or_insert(0);
+            *v += 1;
         }
         for l in uniq {
             let s = if count {
@@ -40,7 +33,7 @@ pub fn start_thread_uniq(
                 s1.push_str(&format!("{}", l.1));
                 s1
             } else {
-                l.0
+                l.0.to_string()
             };
             if to_write.send(s).is_err() {
                 println!("error sending to write");
